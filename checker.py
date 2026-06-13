@@ -1,59 +1,82 @@
-from crud import check_username
+from crud import check_username , check_phonenumber
+import re
 
 def password_check():
 
-    flag = False
+    while True:
+        password = input("Please enter your password: ").strip()
+        
+        if len(password) < 8:
+            print("❌ Password must be at least 8 characters long.")
+            continue
+        
+        if not re.search(r'[A-Z]', password):
+            print("❌ Password must contain at least one uppercase letter.")
+            continue
+            
+        if not re.search(r'[a-z]', password):
+            print("❌ Password must contain at least one lowercase letter.")
+            continue
+            
+        if not re.search(r'\d', password):
+            print("❌ Password must contain at least one digit.")
+            continue
+            
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            print("❌ Password must contain at least one special character (!@#$%^&* etc).")
+            continue
+        
+        # Optional: Ask for confirmation
+        confirm = input("Confirm your password: ").strip()
+        if password != confirm:
+            print("❌ Passwords do not match. Please try again.")
+            continue
+            
+        print("✅ Strong password accepted!")
+        return password
 
-    while flag != True:
-        password = input("please enter your password: ")
-        if len(password) < 8 :
-            print("your password is too short")
 
-        if password.isdigit():
-            print("Your password must contain letter")
 
-    flag = True
-    return password
-
-def is_username_taken(username):
-    username = username
-    
-    if check_username(username):
-        print("this username is taken please choose another one.")
-        is_username_valid()
-
-    else:
+def is_username_valid() -> str:
+    """Validate username and check if it's taken"""
+    while True:
+        username = input("Enter your username: ").strip()
+        
+        if len(username) < 5:
+            print("❌ Username must be at least 5 characters long.")
+            continue
+            
+        if not username.isalnum() and not '_' in username:
+            print("❌ Username can only contain letters, numbers, and underscores.")
+            continue
+        
+        # Check if username exists in database
+        if check_username(username):          # This should return True if taken
+            print("❌ This username is already taken. Please choose another one.")
+            continue
+            
+        print("✅ Username is available!")
         return username
 
 
 
-def is_username_valid():
-    flag = False
-    
-    while flag != True:
-        username = input("enter your username: ")
-
-        if len(username) < 5:
-            print("your username is too short must contain atleast 6 character")    
+def is_phonenumber_valid() -> str:
+    """Validate phone number format and check uniqueness"""
+    while True:
+        phone = input("Enter your phone number (e.g. 09123456789): ").strip()
+        
+        # Basic Iranian phone number validation (adjust pattern for your needs)
+        if not re.match(r'^09\d{9}$', phone):
+            print("❌ Invalid phone number. Must be 11 digits starting with 09.")
+            continue
+        
+        # Check if phone number is already registered
+        if check_phonenumber(phone):          # We'll add this to crud.py
+            print("❌ This phone number is already registered.")
+            continue
             
-        else:
-            flag = True
-
-    username = is_username_taken(username)
-    return username
-
-
-def is_phonenumber_taken():
-    flag = False
-
-    while flag != True:
-        phone_number = input("enter your phone number: ")
-        result=0
-        # result = get_phone_number()
-
-        if not result:
-            flag = True
-            return phone_number
+        print("✅ Phone number accepted!")
+        return phone
 
 
 def admin_user():
