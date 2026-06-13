@@ -4,17 +4,18 @@ from database import Base
 class Book(Base):
     __tablename__ = "books"
 
-    id = Column(Integer , autoincrement=1 , primary_key=True )
+    id = Column(Integer , autoincrement=True , primary_key=True )
     title = Column(String(100) , nullable=True , default="Unknown book name")
-    authur = Column(String(100) , nullable=True , default="Unknown book authur")
+    author = Column(String(100) , nullable=True , default="Unknown book authur")
     genre = Column(String(100) , nullable=True , default="Unknown book genre")
+    
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer , primary_key=True , autoincrement=1)
+    id = Column(Integer , primary_key=True , autoincrement=True)
     username = Column(String(50) , nullable=True , default="Unknown")
-    password = Column(String , nullable=False)
+    password = Column(String(50) , nullable=False)
     phonenumber = Column(String(20) , nullable=True , default="0")
     is_admin = Column(Boolean , nullable=True , default = False)
     

@@ -1,6 +1,6 @@
 from crud import check_username , check_phonenumber
 import re
-
+from database import SessionLocal , get_db
 def password_check():
 
     while True:
@@ -51,7 +51,8 @@ def is_username_valid() -> str:
             continue
         
         # Check if username exists in database
-        if check_username(username):          # This should return True if taken
+        db = next(get_db())
+        if check_username(db , username):          # This should return True if taken
             print("❌ This username is already taken. Please choose another one.")
             continue
             
@@ -71,7 +72,8 @@ def is_phonenumber_valid() -> str:
             continue
         
         # Check if phone number is already registered
-        if check_phonenumber(phone):          # We'll add this to crud.py
+        db = next(get_db())
+        if check_phonenumber(db , phone):          # We'll add this to crud.py
             print("❌ This phone number is already registered.")
             continue
             
