@@ -7,7 +7,7 @@ class Book(Base):
     id = Column(Integer , autoincrement=True , primary_key=True )
     title = Column(String(100) , nullable=True , default="Unknown book name")
     author = Column(String(100) , nullable=True , default="Unknown book authur")
-    genre = Column(String(100) , nullable=True , default="Unknown book genre")
+    isbn = Column(String(20), unique=True, nullable=True)
     
 
 class User(Base):

@@ -1,7 +1,8 @@
 from database import SessionLocal
 import checker as ch
 from crud import check_username, check_phonenumber, create_user, authenticate_user
-
+from admin import admin_menu
+from console import console, print_success, print_error, print_header , Prompt
 def get_db():
     db = SessionLocal()
     try:
@@ -16,7 +17,7 @@ def sign_up():
     db = next(get_db())
     try:
         # Use checker functions
-        username = ch.is_username_valid()           # Now uses crud check
+        username = ch.is_username_valid()           
         password = ch.password_check()
         phonenumber = ch.is_phonenumber_valid()
         
@@ -48,7 +49,7 @@ def sign_in():
             print(f"\n✅ Welcome back, {username}!")
             if user.is_admin:
                 print("👑 Admin privileges activated.")
-            # TODO: Later redirect to main menu
+                admin_menu()
         else:
             print("❌ Invalid username or password.")
             
@@ -61,25 +62,22 @@ def sign_in():
 # Main menu
 def main_auth():
     while True:
-        print("\n" + "="*40)
-        print("          LMS - Authentication")
-        print("="*40)
-        print("1. Sign Up")
-        print("2. Sign In")
-        print("3. Exit")
-        print("="*40)
+        console.clear()  # Nice clean screen
+        print_header("LMS - Library Management System")
         
-        choice = input("Enter your choice (1/2/3): ").strip()
+        console.print("\n[bold]1.[/bold] Sign Up")
+        console.print("[bold]2.[/bold] Sign In")
+        console.print("[bold]3.[/bold] Exit")
+        
+        choice = Prompt.ask("Enter your choice", choices=["1", "2", "3"])
         
         if choice == "1":
             sign_up()
         elif choice == "2":
             sign_in()
         elif choice == "3":
-            print("👋 Goodbye!")
+            print_success("Goodbye! 👋")
             break
-        else:
-            print("❌ Invalid choice. Please try again.")
 
 
 if __name__ == "__main__":
