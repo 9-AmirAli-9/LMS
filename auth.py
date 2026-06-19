@@ -3,6 +3,9 @@ import checker as ch
 from crud import check_username, check_phonenumber, create_user, authenticate_user
 from admin import admin_menu
 from console import console, print_success, print_error, print_header , Prompt
+from user import user_menu
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -50,6 +53,10 @@ def sign_in():
             if user.is_admin:
                 print("👑 Admin privileges activated.")
                 admin_menu()
+            else:
+                user_menu(user)
+            return
+            
         else:
             print("❌ Invalid username or password.")
             

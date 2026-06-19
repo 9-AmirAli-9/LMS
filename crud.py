@@ -1,6 +1,9 @@
 from sqlalchemy.orm import Session
 from models import Book , User
 from sqlalchemy import or_
+from models import Loan
+from datetime import datetime
+
 # ==================== BOOK FUNCTIONS ====================
 
 def create_book(db: Session, title: str , author: str):
@@ -67,6 +70,37 @@ def delete_book(db: Session, book_id: int):
     db.commit()
     return True
 
+def borrow_book(db: Session, user_id: int, book_id: int):
+    """قرض گرفتن کتاب"""
+    # چک کنیم کتاب وجود دارد
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        return False, "کتاب یافت نشد"
+
+    # چک کنیم قبلاً قرض گرفته نشده باشد (ساده)
+    active_loan = db.query(Loan).filter(Loan.book_id == book_id, Loan.return_date == None).first()
+    if active_loan:
+        return False, "این کتاب قبلاً قرض داده شده است"
+
+    loan = Loan(user_id=user_id, book_id=book_id)
+    db.add(loan)
+    db.commit()
+    db.refresh(loan)
+    return True, f"کتاب '{book.title}' با موفقیت قرض گرفته شد. مهلت بازگشت: {loan.due_date.date()}"
+
+
+def return_book(db: Session, user_id: int, loan_id: int):
+    """پس دادن کتاب"""
+    loan = db.query(Loan).filter(Loan.id == loan_id, Loan.user_id == user_id, Loan.return_date == None).first()
+    if not loan:
+        return False, "قرض معتبر یافت نشد"
+
+    loan.return_date = datetime.utcnow()
+    db.commit()
+    return True, f"کتاب '{loan.book.title}' با موفقیت پس داده شد"
+
+
+
 
 # ==================== USER FUNCTIONS ====================
 
@@ -98,3 +132,7 @@ def authenticate_user(db: Session, username: str, password: str):
     if user and user.password == password:   # TODO: Use password hashing later
         return user
     return None
+
+def get_user_loans(db: Session, user_id: int):
+    """دریافت لیست قرض‌های کاربر"""
+    return db.query(Loan).filter(Loan.user_id == user_id).all()
