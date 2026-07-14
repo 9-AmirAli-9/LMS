@@ -13,8 +13,13 @@ class Book(Base):
     isbn = Column(String(20), unique=True, nullable=True)
     
 
+
 class User(Base):
     __tablename__ = "users"
+
+    __table_args__ = {
+        "mysql_auto_increment": 100
+    }
 
     id = Column(Integer , primary_key=True , autoincrement=True)
     username = Column(String(50) , nullable=True , default="Unknown")
@@ -22,7 +27,7 @@ class User(Base):
     phonenumber = Column(String(20) , nullable=True , default="0")
     is_admin = Column(Boolean , nullable=True , default = False)
     
-
+    
 class Loan(Base):
     __tablename__ = "loans"
 

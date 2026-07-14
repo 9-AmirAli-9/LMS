@@ -77,7 +77,7 @@ def borrow_book(db: Session, user_id: int, book_id: int):
     if not book:
         return False, "کتاب یافت نشد"
 
-    # چک کنیم قبلاً قرض گرفته نشده باشد (ساده)
+    # چک کنیم قبلاً قرض گرفته نشده باشد
     active_loan = db.query(Loan).filter(Loan.book_id == book_id, Loan.return_date == None).first()
     if active_loan:
         return False, "این کتاب قبلاً قرض داده شده است"
@@ -112,13 +112,12 @@ def check_phonenumber(db: Session, phone: str) -> bool:
     user = db.query(User).filter(User.phonenumber == phone).first()
     return user is not None
 
-def create_user(db: Session, username: str, password: str, phonenumber: str, is_admin: bool = False):
+def create_user(db: Session, username: str, password: str, phonenumber: str):
 
     user = User(
         username=username,
         password=password,        # TODO: Hash password later with bcrypt
         phonenumber=phonenumber,
-        is_admin=is_admin
     )
     db.add(user)
     db.commit()
@@ -136,3 +135,5 @@ def authenticate_user(db: Session, username: str, password: str):
 def get_user_loans(db: Session, user_id: int):
     """دریافت لیست قرض‌های کاربر"""
     return db.query(Loan).filter(Loan.user_id == user_id).all()
+
+
