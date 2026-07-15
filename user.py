@@ -10,11 +10,11 @@ def user_menu(user):
         print_header(f"LMS - Welcome {user.username}")
         print_info(f"user: {user.username}")
 
-        print_bold("\n1. جستجوی کتاب‌ها")
-        print_bold("2. قرض گرفتن کتاب")
-        print_bold("3. پس دادن کتاب")
-        print_bold("4. کتاب‌های قرض گرفته شده من")
-        print_bold("5. خروج از حساب")
+        print_bold("\n1. Search books")
+        print_bold("2. Loan book")
+        print_bold("3. Return book")
+        print_bold("4. My loaned book")
+        print_bold("5. Log out")
 
         choice = Prompt.ask("Enter your choice", choices=["1", "2", "3", "4", "5"])
 
@@ -34,7 +34,7 @@ def user_menu(user):
 def search_book_menu():
     db = next(get_db())
     try:
-        query = Prompt.ask("کلمه جستجو (عنوان، نویسنده یا ژانر)").strip()
+        query = Prompt.ask("search book(title , author , isbn)").strip()
         if not query:
             return
         books = search_books(db, query)
@@ -44,7 +44,7 @@ def search_book_menu():
 
         print_info(f"\nsearch result({len(books)} books):")
         for book in books:
-            print_info(f"• ID: {book.id} | {book.title} | {book.author} | {book.genre}")
+            print_info(f"• ID: {book.id} | {book.title} | {book.author} | {book.isbn}")
     finally:
         db.close()
 
@@ -53,7 +53,7 @@ def borrow_menu(user):
     db = next(get_db())
     try:
         list_books_simple(db)
-        book_id = int(Prompt.ask("آیدی کتاب مورد نظر را وارد کنید"))
+        book_id = int(Prompt.ask("Enter the ID of the desired book."))
 
         success, message = borrow_book(db, user.id, book_id)
         if success:
@@ -61,9 +61,9 @@ def borrow_menu(user):
         else:
             print_error(message)
     except ValueError:
-        print_error("لطفا عدد وارد کنید")
+        print_error("Please enter number.")
     except Exception as e:
-        print_error(f"خطا: {e}")
+        print_error(f"Error: {e}")
     finally:
         db.close()
 
@@ -73,14 +73,14 @@ def return_menu(user):
     try:
         loans = get_user_loans(db, user.id)
         if not loans:
-            print_info("شما هیچ کتاب قرض گرفته‌ای ندارید")
+            print_info("You don't have loans")
             return
 
-        console.print("\n[bold]کتاب‌های قرض گرفته شده:[/bold]")
+        print_bold("\n[bold]Loan books:[/bold]")
         for loan in loans:
-            console.print(f"ID قرض: {loan.id} | کتاب: {loan.book.title} | مهلت: {loan.due_date.date()}")
+            print_info(f"LOAN ID: {loan.id} | BOOK: {loan.book.title} | DUE DATE: {loan.due_date.date()}")
 
-        loan_id = int(Prompt.ask("آیدی قرض را برای پس دادن وارد کنید"))
+        loan_id = int(Prompt.ask("Please enter the loan id: "))
         success, message = return_book(db, user.id, loan_id)
         if success:
             print_success(message)
@@ -95,19 +95,19 @@ def show_my_loans(user):
     try:
         loans = get_user_loans(db, user.id)
         if not loans:
-            print_info("شما هیچ کتاب قرض گرفته‌ای ندارید")
+            print_info("You didn't loan any books.")
             return
 
-        console.print("\n[bold cyan]کتاب‌های قرض گرفته شده من:[/bold cyan]")
+        print_header("\n[bold cyan]my loaned books: [/bold cyan]")
         for loan in loans:
-            status = "پس داده شده" if loan.return_date else "در حال قرض"
-            console.print(f"• {loan.book.title} توسط {loan.book.author} | مهلت: {loan.due_date.date()} | وضعیت: {status}")
+            status = "returned" if loan.return_date else "loan"
+            print_info(f"• {loan.book.title} by {loan.book.author} | due date: {loan.due_date.date()} | status: {status}")
     finally:
         db.close()
 
 
 def list_books_simple(db):
     books = get_all_books(db)
-    console.print("\n[bold]لیست کتاب‌ها:[/bold]")
+    print_bold("\n[bold]Book list: [/bold]")
     for book in books:
-        console.print(f"ID: {book.id} | {book.title} | {book.author}")
+        print_info(f"ID: {book.id} | {book.title} | {book.author}")

@@ -4,7 +4,6 @@ from database import SessionLocal , get_db
 from console import print_error, print_success , Prompt
 
 
-
 def password_check():
 
     while True:
@@ -70,20 +69,16 @@ def is_phonenumber_valid() -> str:
     while True:
         phone = Prompt.ask("Enter your phone number (e.g. 09123456789): ")
         
-        # Basic Iranian phone number validation (adjust pattern for your needs)
+        # Basic Iranian phone number validation 
         if not re.match(r'^09\d{9}$', phone):
             print_error("Invalid phone number. Must be 11 digits starting with 09.")
             continue
         
         # Check if phone number is already registered
         db = next(get_db())
-        if check_phonenumber(db , phone):          # We'll add this to crud.py
+        if check_phonenumber(db , phone):
             print_error("This phone number is already registered.")
             continue
             
         print_success("Phone number accepted!")
         return phone
-
-
-def admin_user():
-    pass

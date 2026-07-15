@@ -16,54 +16,51 @@ def get_db():
 # ثبت نام
 def sign_up():
     """Complete secure sign up"""
-    print("\n=== Sign Up ===")
+    print_header("\n=== Sign Up ===")
     
     db = next(get_db())
     try:
-        # Use checker functions
+        
         username = ch.is_username_valid()           
         password = ch.password_check()
         phonenumber = ch.is_phonenumber_valid()
         
-        
-        
-        # Create user using CRUD
         create_user(db, username, password, phonenumber)
         
-        print(f"\n Account successfully created for '{username}'!")
+        print_success(f"\n Account successfully created for '{username}'!")
         
     except Exception as e:
-        print(f" Registration failed: {e}")
+        print_error(f" Registration failed: {e}")
     finally:
         db.close()
 
 #  ورود
 def sign_in():
     """Sign in using CRUD authentication"""
-    print("\n=== Sign In ===")
+    print_header("\n=== Sign In ===")
     
     db = next(get_db())
     try:
-        username = input("Enter your username: ").strip()
+        username = Prompt.ask("Enter your username: ").strip()
         
         password = Prompt.ask("Enter your password: " , password=True).strip()
         
         user = authenticate_user(db, username, password)
         
         if user:
-            print(f"\n Welcome back, {username}!")
+            print_success(f"\n Welcome back, {username}!")
             if user.is_admin:
-                print("Admin privileges activated.")
+                print_success("Admin privileges activated.")
                 admin_menu()
             else:
                 user_menu(user)
             return
             
         else:
-            print("Invalid username or password.")
+            print_error("Invalid username or password.")
             
     except Exception as e:
-        print(f"Sign in error: {e}")
+        print_error(f"Sign in error: {e}")
     finally:
         db.close()
 
@@ -74,9 +71,9 @@ def main_auth():
         console.clear() 
 
         print_header("LMS - Library Management System")
-        print_bold("\n[bold]1.[/bold] Sign Up")
-        print_bold("[bold]2.[/bold] Sign In")
-        print_bold("[bold]3.[/bold] Exit")
+        print_bold("\n1. Sign Up")
+        print_bold("2. Sign In")
+        print_bold("3. Exit")
         
         choice = Prompt.ask("Enter your choice", choices=["1", "2", "3"])
         

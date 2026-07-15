@@ -2,7 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+todolist.txt
 # C extensions
 *.so
 idea.txt

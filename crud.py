@@ -37,7 +37,7 @@ def search_books(db: Session, query: str):
         or_(
             Book.title.ilike(f"%{query}%"),
             Book.author.ilike(f"%{query}%"),
-            Book.genre.ilike(f"%{query}%")
+            Book.isbn.ilike(f"%{query}%")
         )
     ).all()
 
