@@ -29,7 +29,6 @@ def password_check():
             print_error("Password must contain at least one special character (!@#$%^&* etc).")
             continue
         
-        # Optional: Ask for confirmation prompt.ask needed
         confirm = Prompt.ask("Confirm your password: " , password=True).strip()
         if password != confirm:
             print_error("Passwords do not match. Please try again.")

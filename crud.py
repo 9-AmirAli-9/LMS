@@ -32,12 +32,13 @@ def get_all_books(db: Session, skip: int = 0, limit: int = 100):
 
 
 def search_books(db: Session, query: str):
-    """Search books by title, author, or genre"""
+    """Search books by title, author, or isbn"""
     return db.query(Book).filter(
         or_(
             Book.title.ilike(f"%{query}%"),
             Book.author.ilike(f"%{query}%"),
-            Book.isbn.ilike(f"%{query}%")
+            Book.isbn.ilike(f"%{query}%"),
+            Book.id.ilike(f"%{query}%")
         )
     ).all()
 
@@ -60,8 +61,9 @@ def update_book(db: Session, book_id: int, title: str = None, author: str = None
     return book
 
 
-def delete_book(db: Session, book_id: int):
-    """Delete a book by ID"""
+def delete_book(db: Session, query):
+    """Delete a book by ID """
+
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
         return False
