@@ -36,8 +36,8 @@ class Loan(Base):
     book_id = Column(Integer, ForeignKey("books.id"), nullable=False)
     borrow_date = Column(DateTime, default=datetime.utcnow, nullable=False)
     due_date = Column(DateTime, nullable=False)
-    return_date = Column(DateTime, nullable=True)   # None یعنی هنوز پس نداده
-
+    return_date = Column(DateTime, nullable=True)   
+    
     # Relationships
     user = relationship("User", backref="loans")
     book = relationship("Book", backref="loans")

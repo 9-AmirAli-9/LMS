@@ -43,7 +43,7 @@ def search_books(db: Session, query: str):
     ).all()
 
 
-def update_book(db: Session, book_id: int, title: str = None, author: str = None, genre: str = None):
+def update_book(db: Session, book_id: int, title: str = None, author: str = None, isbn: str = None):
     """Update book information"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
@@ -53,8 +53,8 @@ def update_book(db: Session, book_id: int, title: str = None, author: str = None
         book.title = title
     if author is not None:
         book.author = author
-    if genre is not None:
-        book.genre = genre
+    if isbn is not None:
+        book.isbn = isbn
     
     db.commit()
     db.refresh(book)
@@ -73,33 +73,31 @@ def delete_book(db: Session, query):
     return True
 
 def borrow_book(db: Session, user_id: int, book_id: int):
-    """قرض گرفتن کتاب"""
-    # چک کنیم کتاب وجود دارد
+    """Borrow a book"""
     book = db.query(Book).filter(Book.id == book_id).first()
     if not book:
-        return False, "کتاب یافت نشد"
+        return False, "Book not found"
 
-    # چک کنیم قبلاً قرض گرفته نشده باشد
     active_loan = db.query(Loan).filter(Loan.book_id == book_id, Loan.return_date == None).first()
     if active_loan:
-        return False, "این کتاب قبلاً قرض داده شده است"
+        return False, "This book is already borrowed"
 
     loan = Loan(user_id=user_id, book_id=book_id)
     db.add(loan)
     db.commit()
     db.refresh(loan)
-    return True, f"کتاب '{book.title}' با موفقیت قرض گرفته شد. مهلت بازگشت: {loan.due_date.date()}"
+    return True, f"Book'{book.title}' borrowed successfully. Due date:{loan.due_date.date()}"
 
 
 def return_book(db: Session, user_id: int, loan_id: int):
-    """پس دادن کتاب"""
+    """Return a book"""
     loan = db.query(Loan).filter(Loan.id == loan_id, Loan.user_id == user_id, Loan.return_date == None).first()
     if not loan:
-        return False, "قرض معتبر یافت نشد"
+        return False, "No active loan found for this book"
 
     loan.return_date = datetime.utcnow()
     db.commit()
-    return True, f"کتاب '{loan.book.title}' با موفقیت پس داده شد"
+    return True, f"Book'{loan.book.title}' returned successfully"
 
 
 

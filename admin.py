@@ -1,6 +1,6 @@
-from database import get_db   # We'll make sure this exists
-from crud import check_isbn , create_book , delete_book , search_books
-import checker as ch   # if needed later
+from database import get_db   
+from crud import check_isbn , create_book , delete_book , search_books , update_book
+import checker as ch   
 from console import console, print_success, print_error, print_header , Prompt , print_bold , Confirm
 
 def add_book():
@@ -50,7 +50,8 @@ def delete():
 
         if Confirm.ask("Are you sure to delete this book: "):
             book = delete_book(db , query)
-            print_success("Book deleted successfully.")
+            if book:
+                print_success("Book deleted successfully.")
         else:
             print_error("you cancel the proccess.")
             return
@@ -60,13 +61,37 @@ def delete():
         db.close()
 
 def update()
+    """Admin function to update a book"""
+
     print_header("\n=== Update Book ===")
+    id = Prompt.ask("Enter book id for update:")
+    title = Prompt.ask("Enter new title: [optional]" , default = None)
+    author = Prompt.ask("Enter new author: [optional]" , default = None)
+    isbn = Prompt.ask("Enter new isbn: [optional]" , default = None)
 
+        if not id or not id.isdigit():
+            print_error("You must enter a valid book id!")
+            return
 
+        id = int(id)
 
+        if not title or not author or not isbn :
+            print_error("You must enter at least one field to update (title, author, or isbn)!")
 
+        if Confirm.ask("Are you sure about this changes?"):
+            db = next(get_db())
 
-
+            try:
+                updated_book=update_book(db=db, book_id=id, title=title, author=author, isbn=isbn )
+                if updated_book:
+                    print_success(f"Book with ID {book_id} updated successfully!")
+                else:
+                    print_error(f"Book with ID {book_id} not found!")
+              
+            except Exception as e:
+                print_error(f"Error updating book {e}")
+        else:
+            print_error("The opration is canceled by user ")
 
 def admin_menu():
     """Main admin dashboard"""
