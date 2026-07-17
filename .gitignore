@@ -3,6 +3,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 todolist.txt
+databases.py
 # C extensions
 *.so
 idea.txt
